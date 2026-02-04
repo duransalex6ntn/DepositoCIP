@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Estoque - Moderno</title>
+    <!-- Carregando Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Mammoth.js para ler arquivos .docx -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            color: #1f2937;
+            min-height: 100vh;
+        }
+        
+        /* Transições de Página (SPA) */
+        .page-view {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            display: none; /* Oculto por padrão */
+            width: 100%;
+        }
+        
+        .page-view.active {
+            opacity: 1;
+            transform: translateY(0);
+            display: block; 
+        }
+
+        /* Auth container precisa ser flex quando ativo para centralizar */
+        #auth-container.active {
+            display: flex;
+        }
+
+        /* Estilização Personalizada da Tabela */
+        .modern-table-container {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background: white;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+        }
+        
+        .data-row {
+            transition: background-color 0.2s;
+        }
+        .data-row:hover {
+            background-color: #f8fafc;
+        }
+
+        /* Inputs Modernos */
+        .input-field {
+            transition: all 0.2s;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            background-color: #fff;
+        }
+        .input-field:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            outline: none;
+        }
+        
+        /* Input Readonly */
+        .input-field[readonly] {
+            background-color: #f1f5f9;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        /* Botões com Gradiente e Sombra */
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px -1px rgba(37, 99, 235, 0.4);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-secondary:hover {
+            background-color: #f8fafc;
+            border-color: #94a3b8;
+            color: #1e293b;
+        }
+
+        /* Cards do Dashboard */
+        .dash-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0);
+            cursor: pointer;
+        }
+        .dash-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: #bfdbfe;
+        }
+        
+        /* Scrollbar estilizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c7c7c7; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0; 
+        }
+    </style>
+
+    <!-- Importando Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, addDoc, onSnapshot, collection, query, where, getDocs, updateDoc, serverTimestamp, setLogLevel, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- GERENCIADOR DE PÁGINAS (Router Simples) ---
+        function navigateTo(pageId) {
+            // Esconde todas as páginas
+            document.querySelectorAll('.page-view').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Mostra a página desejada
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // --- LÓGICA DE NAVEGAÇÃO INTERNA (Login/Cadastro) ---
+        function toggleAuthForms() {
+            document.getElementById('login-form-container').classList.toggle('hidden');
+            document.getElementById('register-form-container').classList.toggle('hidden');
+        }
+        window.toggleAuthForms = toggleAuthForms;
+
+        // --- PASSO IMPORTANTE: CONFIGURAÇÃO DO FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAd6tEf3dBDohA1TCgLn-w4UW1UKE_90tE",
+            authDomain: "meu-controle-de-estoque-3344f.firebaseapp.com",
+            projectId: "meu-controle-de-estoque-3344f",
+            storageBucket: "meu-controle-de-estoque-3344f.appspot.com",
+            messagingSenderId: "524659153893",
+            appId: "1:524659153893:web:118326d46946ee60306d0c",
+            measurementId: "G-BD19J1CTCZ"
+        };
+
+        setLogLevel('Debug');
+        
+        let app, db, auth;
+        let userId = null;
+        let isAuthReady = false;
+        let allDepartures = [];
+        let unsubscribe;
+        
+        const logTableBody = document.getElementById('log-table-body');
+        const summaryTableBody = document.getElementById('summary-table-body');
+        const weeklySummaryTableBody = document.getElementById('weekly-summary-table-body');
+        const monthlySummaryTableBody = document.getElementById('monthly-summary-table-body');
+        const dateFilterInput = document.getElementById('date-filter');
+        const weekMonthFilterInput = document.getElementById('week-month-filter');
+        const weekNumberFilterInput = document.getElementById('week-number-filter');
+        const monthFilterInput = document.getElementById('month-filter');
+        const materialInput = document.getElementById('material-name');
+        const unitInput = document.getElementById('unit_of_measure');
+        const formStatus = document.getElementById('form-status');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const userIdDisplay = document.getElementById('user-id-display');
+        const addDepartureForm = document.getElementById('add-departure-form'); 
+        const analysisOutput = document.getElementById('analysis-output');
+        const topMonthOutput = document.getElementById('top-month-output');
+        const batchUploadStatus = document.getElementById('batch-upload-status');
+        const authStatus = document.getElementById('auth-status');
+        const dashboardContainer = document.getElementById('dashboard-container');
+        const registroContainer = document.getElementById('registro-container');
+        const relatoriosContainer = document.getElementById('relatorios-container');
+        const semanalContainer = document.getElementById('semanal-container');
+        const mensalContainer = document.getElementById('mensal-container');
+
+        function showDashboard() {
+            [dashboardContainer].forEach(c => c.classList.remove('hidden'));
+            [registroContainer, relatoriosContainer, semanalContainer, mensalContainer].forEach(c => c.classList.add('hidden'));
+        }
+        window.showDashboard = showDashboard;
+        function showRegistro() {
+            [registroContainer].forEach(c => c.classList.remove('hidden'));
+            [dashboardContainer, relatoriosContainer, semanalContainer, mensalContainer].forEach(c => c.classList.add('hidden'));
+        }
+        window.showRegistro = showRegistro;
+        function showRelatorios() {
+            [relatoriosContainer].forEach(c => c.classList.remove('hidden'));
+            [dashboardContainer, registroContainer, semanalContainer, mensalContainer].forEach(c => c.classList.add('hidden'));
+        }
+        window.showRelatorios = showRelatorios;
+        function showSemanal() {
+            [semanalContainer].forEach(c => c.classList.remove('hidden'));
+            [dashboardContainer, registroContainer, relatoriosContainer, mensalContainer].forEach(c => c.classList.add('hidden'));
+        }
+        window.showSemanal = showSemanal;
+        function showMensal() {
+            [mensalContainer].forEach(c => c.classList.remove('hidden'));
+            [dashboardContainer, registroContainer, relatoriosContainer, semanalContainer].forEach(c => c.classList.add('hidden'));
+        }
+        window.showMensal = showMensal;
+
+        if (!firebaseConfig || !firebaseConfig.projectId || firebaseConfig.projectId === "SEU_PROJETO_ID") {
+            console.error("CONFIGURAÇÃO DO FIREBASE INCOMPLETA!");
+        } else {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+        }
+
+        const collectionPath = `saidas_materiais`;
+        
+        const handleRegister = (e) => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            authStatus.style.display = 'block';
+            authStatus.textContent = "Registrando...";
+            authStatus.className = 'text-center text-sm text-gray-500 mt-4';
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    authStatus.textContent = "Usuário registrado com sucesso! Faça o login.";
+                    authStatus.className = 'text-center text-sm text-green-600 mt-4';
+                    setTimeout(() => toggleAuthForms(), 1500);
+                })
+                .catch((error) => {
+                    let msg = "Ocorreu um erro ao registrar.";
+                    if (error.code === 'auth/email-already-in-use') msg = "Este e-mail já está em uso.";
+                    else if (error.code === 'auth/weak-password') msg = "A senha deve ter pelo menos 6 caracteres.";
+                    authStatus.textContent = `Erro: ${msg}`;
+                    authStatus.className = 'text-center text-sm text-red-600 mt-4';
+                });
+        };
+        const handleLogin = (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            authStatus.style.display = 'block';
+            authStatus.textContent = "Autenticando...";
+            authStatus.className = 'text-center text-sm text-gray-500 mt-4';
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => authStatus.style.display = 'none')
+                .catch(() => {
+                    authStatus.textContent = "Erro: E-mail ou senha inválidos.";
+                    authStatus.className = 'text-center text-sm text-red-600 mt-4';
+                });
+        };
+        const handleLogout = () => {
+            if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+            signOut(auth);
+        };
+        
+        function getWeekOfMonthDateRange(yearMonth, weekNumber) {
+            const [year, month] = yearMonth.split('-').map(Number);
+            let startDay, endDay;
+            if (weekNumber === 'q1') {
+                startDay = 1; endDay = 15;
+            } else if (weekNumber === 'q2') {
+                startDay = 16; endDay = new Date(year, month, 0).getDate(); 
+            } else {
+                const weekNum = parseInt(weekNumber, 10);
+                if (weekNum === 1) { startDay = 1; endDay = 7; } 
+                else if (weekNum === 2) { startDay = 8; endDay = 14; } 
+                else if (weekNum === 3) { startDay = 15; endDay = 21; } 
+                else { startDay = 22; endDay = new Date(year, month, 0).getDate(); }
+            }
+            const startDate = new Date(year, month - 1, startDay);
+            const endDate = new Date(year, month - 1, endDay);
+            return { start: startDate.toISOString().split('T')[0], end: endDate.toISOString().split('T')[0] };
+        }
+        
+        function populateMonthSelectors() {
+            const months = [];
+            const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            let d = new Date();
+            for (let i=0; i < 12; i++) {
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                months.push({ value: `${year}-${month}`, text: `${monthNames[d.getMonth()]} de ${year}` });
+                d.setMonth(d.getMonth() - 1);
+            }
+            weekMonthFilterInput.innerHTML = months.map(m => `<option value="${m.value}">${m.text}</option>`).join('');
+            if(monthFilterInput) { monthFilterInput.value = months[0].value; }
+        }
+
+        if (auth) {
+            onAuthStateChanged(auth, (user) => {
+                loadingIndicator.style.display = 'none';
+                if (user) {
+                    // --- USUÁRIO LOGADO: MOSTRAR APP ---
+                    userId = user.uid;
+                    isAuthReady = true;
+                    userIdDisplay.textContent = `${user.email}`;
+                    
+                    // Navega para a página principal
+                    navigateTo('main-app-container');
+                    
+                    showDashboard(); 
+                    
+                    const today = new Date();
+                    document.getElementById('date').value = today.toISOString().split('T')[0];
+                    document.getElementById('date-filter').value = today.toISOString().split('T')[0];
+                    const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+                    monthFilterInput.value = currentMonth;
+                    populateMonthSelectors();
+                    weekMonthFilterInput.value = currentMonth;
+                    if (!unsubscribe) setupRealtimeListener();
+                } else {
+                    // --- USUÁRIO DESLOGADO: MOSTRAR LOGIN ---
+                    userId = null; isAuthReady = false;
+                    navigateTo('auth-container');
+                }
+            });
+        }
+        document.getElementById('login-form').addEventListener('submit', handleLogin);
+        document.getElementById('register-form').addEventListener('submit', handleRegister);
+        document.getElementById('logout-button').addEventListener('click', handleLogout);
+        
+        async function registerDeparture(material, quantity, date, destination, unit) {
+            if (!isAuthReady) return false;
+            if (!material || isNaN(quantity) || quantity <= 0 || !date || !destination || !unit) {
+                formStatus.textContent = `Preencha todos os campos corretamente.`;
+                formStatus.className = 'text-sm mt-3 sm:mt-0 sm:ml-4 font-semibold text-red-600';
+                return false;
+            }
+            const materialUpper = material.toUpperCase();
+            const destinationUpper = destination.toUpperCase();
+            const unitUpper = unit.toUpperCase();
+            try {
+                const q = query(
+                    collection(db, collectionPath),
+                    where("date", "==", date),
+                    where("material", "==", materialUpper),
+                    where("destination", "==", destinationUpper),
+                    where("unit_of_measure", "==", unitUpper)
+                );
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    const docToUpdate = querySnapshot.docs[0];
+                    const currentData = docToUpdate.data();
+                    const newQuantity = currentData.quantity + quantity;
+                    await updateDoc(doc(db, collectionPath, docToUpdate.id), {
+                        quantity: newQuantity,
+                        timestamp: serverTimestamp()
+                    });
+                    formStatus.textContent = `Atualizado: ${material} (Total: ${newQuantity} ${unitUpper})`;
+                } else {
+                    await addDoc(collection(db, collectionPath), {
+                        material: materialUpper, quantity, date, destination: destinationUpper, unit_of_measure: unitUpper,
+                        timestamp: serverTimestamp(), userId, userEmail: auth.currentUser.email
+                    });
+                    formStatus.textContent = `Saída de "${material}" registrada.`;
+                }
+                formStatus.className = 'text-sm mt-3 sm:mt-0 sm:ml-4 font-semibold text-green-600';
+                return true;
+            } catch (e) {
+                console.error("Erro ao registrar:", e);
+                formStatus.textContent = "ERRO: Falha ao registrar.";
+                formStatus.className = 'text-sm mt-3 sm:mt-0 sm:ml-4 font-semibold text-red-600';
+                return false;
+            }
+        }
+
+        const addDeparture = async (e) => { 
+            e.preventDefault();
+            const form = e.target;
+            const selectedMaterialKey = form.elements['material-name'].value;
+            const unitFromInput = form.elements['unit_of_measure'].value.trim();
+            await registerDeparture(
+                masterMaterialList[selectedMaterialKey]?.displayName || '',
+                parseFloat(form.elements['quantity'].value.trim()),
+                form.elements['date'].value.trim(),
+                form.elements['destination'].value.trim(),
+                unitFromInput
+            );
+            form.reset();
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            unitInput.value = '';
+            form.elements['material-name'].focus();
+        };
+        addDepartureForm.addEventListener('submit', addDeparture);
+
+        const deleteDeparture = async (id, material) => { 
+            if (!isAuthReady) return;
+            try { await deleteDoc(doc(db, collectionPath, id)); } catch (e) { console.error("ERRO: Falha na exclusão.", e); }
+        };
+        window.deleteDeparture = deleteDeparture;
+
+        function setupRealtimeListener() {
+            if (!db) return;
+            const q = query(collection(db, collectionPath));
+            unsubscribe = onSnapshot(q, (querySnapshot) => {
+                if (!isAuthReady) return; 
+                allDepartures = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderData(dateFilterInput.value);
+                renderWeeklySummary();
+                renderMonthlySummary();
+                populateDestinationSuggestions(allDepartures);
+            }, (error) => { console.error("Erro Firestore: ", error); });
+        }
+        
+        dateFilterInput.addEventListener('change', () => isAuthReady && renderData(dateFilterInput.value));
+        weekMonthFilterInput.addEventListener('change', () => isAuthReady && renderWeeklySummary());
+        weekNumberFilterInput.addEventListener('change', () => isAuthReady && renderWeeklySummary());
+        monthFilterInput.addEventListener('input', () => isAuthReady && renderMonthlySummary());
+
+        // --- LISTA MESTRA ---
+        const masterMaterialList = {
+            "CEBOLA": { displayName: "Cebola", category: "Hortifrúti", defaultUnit: "UN" },
+            "BATATAS": { displayName: "Batatas", category: "Hortifrúti", defaultUnit: "UN" },
+            "ABOBORA": { displayName: "Abóbora", category: "Hortifrúti", defaultUnit: "UN" },
+            "ABOBRINHA": { displayName: "Abobrinha", category: "Hortifrúti", defaultUnit: "UN" },
+            "CHUCHU": { displayName: "Chuchu", category: "Hortifrúti", defaultUnit: "UN" },
+            "CENOURA": { displayName: "Cenoura", category: "Hortifrúti", defaultUnit: "UN" },
+            "TOMATE": { displayName: "Tomate", category: "Hortifrúti", defaultUnit: "UN" },
+            "PIMENTAO": { displayName: "Pimentão", category: "Hortifrúti", defaultUnit: "UN" },
+            "CHEIRO VERDE": { displayName: "Cheiro verde", category: "Hortifrúti", defaultUnit: "UN" },
+            "AGRIAO": { displayName: "Agrião", category: "Hortifrúti", defaultUnit: "UN" },
+            "COUVE": { displayName: "Couve", category: "Hortifrúti", defaultUnit: "UN" },
+            "LORO": { displayName: "Loro", category: "Hortifrúti", defaultUnit: "UN" },
+            "BETERRABA": { displayName: "Beterraba", category: "Hortifrúti", defaultUnit: "UN" },
+            "AIPIM": { displayName: "Aipim", category: "Hortifrúti", defaultUnit: "UN" },
+            "BATATA DOCE": { displayName: "Batata doce", category: "Hortifrúti", defaultUnit: "UN" },
+            "PEPINO": { displayName: "Pepino", category: "Hortifrúti", defaultUnit: "UN" },
+            "REPOLHO": { displayName: "Repolho", category: "Hortifrúti", defaultUnit: "UN" },
+            "ALFACE": { displayName: "Alface", category: "Hortifrúti", defaultUnit: "UN" },
+            "QUIABO": { displayName: "Quiabo", category: "Hortifrúti", defaultUnit: "UN" },
+            "RUCULA": { displayName: "Rúcula", category: "Hortifrúti", defaultUnit: "UN" },
+            "ALHO": { displayName: "Alho", category: "Hortifrúti", defaultUnit: "UN" },
+            "MELANCIA": { displayName: "Melancia", category: "Frutas", defaultUnit: "UN" },
+            "BANANA": { displayName: "Banana", category: "Frutas", defaultUnit: "UN" },
+            "LIMAO": { displayName: "Limão", category: "Frutas", defaultUnit: "UN" },
+            "LARANJA": { displayName: "Laranja", category: "Frutas", defaultUnit: "UN" },
+            "MAMAO": { displayName: "Mamão", category: "Frutas", defaultUnit: "UN" },
+            "MELAO": { displayName: "Melão", category: "Frutas", defaultUnit: "UN" },
+            "ABACAXI": { displayName: "Abacaxi", category: "Frutas", defaultUnit: "UN" },
+            "MACA": { displayName: "Maçã", category: "Frutas", defaultUnit: "UN" },
+            "TANGERINA": { displayName: "Tangerina", category: "Frutas", defaultUnit: "UN" },
+            "MANGA": { displayName: "Manga", category: "Frutas", defaultUnit: "UN" },
+            "OVO": { displayName: "Ovo", category: "Proteínas & Frios", defaultUnit: "UN" },
+            "OVO DE CODORNA": { displayName: "Ovo de codorna", category: "Proteínas & Frios", defaultUnit: "UN" },
+            "SALSICHA": { displayName: "Salsicha", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "PRESUNTO": { displayName: "Presunto", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "MORTADELA": { displayName: "Mortadela", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "BACON": { displayName: "Bacon", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "LINGUICA": { displayName: "Linguiça", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "CARNE SECA": { displayName: "Carne seca", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "PEIXE": { displayName: "Peixe", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "COXA E SOBRECOXA": { displayName: "Coxa e sobrecoxa", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "PEITO DE FRANGO": { displayName: "Peito de frango", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "PATINHO": { displayName: "Patinho", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "LAGARTO": { displayName: "Lagarto", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "LOMBO": { displayName: "Lombo", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "MIOLO DA PA": { displayName: "Miolo da pá", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "PALETA SEM MUSCULO": { displayName: "Paleta sem músculo", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "COXAO DURO": { displayName: "Coxão duro", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "FIGADO": { displayName: "Fígado", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "COXAO MOLE": { displayName: "Coxão mole", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "CORACAO ALCATRA": { displayName: "Coração alcatra", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "MAMINHA DA ALCATRA": { displayName: "Maminha da alcatra", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "ACEM": { displayName: "Acém", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "GARGANTA SUINA": { displayName: "Garganta suína", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "MASCARA SUINA": { displayName: "Máscara suína", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "JOELHO SUINO": { displayName: "Joelho suíno", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "PONTA DE COSTELA": { displayName: "Ponta de costela", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "PATINHO CORTADO": { displayName: "Patinho cortado", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "CHARUTO DE CARNE MOIDA": { displayName: "Charuto de carne moída", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "CHARUTO DE PEITO DE FRANGO": { displayName: "Charuto de peito de frango", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "QUEIJO": { displayName: "Queijo", category: "Laticínios", defaultUnit: "KG" },
+            "MANTEIGA": { displayName: "Manteiga", category: "Laticínios", defaultUnit: "KG" },
+            "REQUEIJAO NAZZA": { displayName: "Requeijão nazza", category: "Laticínios", defaultUnit: "UN" },
+            "LEITE EM PO": { displayName: "Leite em pó", category: "Laticínios", defaultUnit: "KG" },
+            "CREME DE LEITE": { displayName: "Creme de leite", category: "Laticínios", defaultUnit: "UN" },
+            "LEITE CONDENSADO": { displayName: "Leite condensado", category: "Laticínios", defaultUnit: "UN" },
+            "ARROZ BRANCO": { displayName: "Arroz branco", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "ARROZ PARABOLIZADO": { displayName: "Arroz parabolizado", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "MACARRAO": { displayName: "Macarrão", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "OLEO": { displayName: "Óleo", category: "Sacaria (Secos)", defaultUnit: "L" },
+            "ACUCAR": { displayName: "Açúcar", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "FEIJAO CARIOCA": { displayName: "Feijão carioca", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "FEIJAO PRETO": { displayName: "Feijão preto", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "CAFE": { displayName: "Café", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "FARINHA DE TRIGO": { displayName: "Farinha de trigo", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "FUBA": { displayName: "Fubá", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "FARINHA DE MANDIOCA": { displayName: "Farinha de mandioca", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "FARINHA DE ROSCA": { displayName: "Farinha de rosca", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "FEIJAO FRADINHO": { displayName: "Feijão Fradinho", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "SAL FINO": { displayName: "Sal fino", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "SAL GROSSO": { displayName: "Sal grosso", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "TRIGO KIBE": { displayName: "Trigo Kibe", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "AMIDO DE MILHO": { displayName: "Amido de milho", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "ACHOCOLATADO": { displayName: "Achocolatado", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "MISTURA DE PAO": { displayName: "Mistura de Pão", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "KETCHUP SACHE": { displayName: "Ketchup sachê", category: "Mercearia", defaultUnit: "UN" },
+            "MOSTARDA SACHE": { displayName: "Mostarda sachê", category: "Mercearia", defaultUnit: "UN" },
+            "MAIONESE": { displayName: "Maionese", category: "Mercearia", defaultUnit: "UN" },
+            "ERVILHA": { displayName: "Ervilha", category: "Mercearia", defaultUnit: "LATA" },
+            "COLORAU": { displayName: "Colorau", category: "Mercearia", defaultUnit: "KG" },
+            "EXTRATO DE TOMATE": { displayName: "Extrato de tomate", category: "Mercearia", defaultUnit: "LATA" },
+            "AZEITE DE OLIVA": { displayName: "Azeite de oliva", category: "Mercearia", defaultUnit: "L" },
+            "VINAGRE": { displayName: "Vinagre", category: "Mercearia", defaultUnit: "L" },
+            "OLEO MISTO": { displayName: "Óleo misto", category: "Mercearia", defaultUnit: "L" },
+            "MOLHO DE PIMENTA": { displayName: "Molho de pimenta", category: "Mercearia", defaultUnit: "UN" },
+            "AZEITONAS": { displayName: "Azeitonas", category: "Mercearia", defaultUnit: "KG" },
+            "BATATA PALHA": { displayName: "Batata palha", category: "Mercearia", defaultUnit: "PCTE" },
+            "MILHO EM CONSERVA": { displayName: "Milho em conserva", category: "Mercearia", defaultUnit: "LATA" },
+            "ERVILHA EM CO
