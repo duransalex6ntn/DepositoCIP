@@ -3,124 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Estoque - Acesso Unificado</title>
-    <!-- Carregando Tailwind CSS para estilização -->
+    <title>Controle de Estoque - Moderno</title>
+    <!-- Carregando Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Mammoth.js para ler arquivos .docx -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-    <!-- Fonte Padrão do Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <style>
-        /* Estilização Base com o Novo Tema Casual */
-        html {
-            scroll-behavior: smooth;
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
         }
+    </script>
+    
+    <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f3f4f6; /* Fundo Cinza Claro (Tailwind gray-100) */
-            color: #1f2937; /* Texto Escuro Principal (Tailwind gray-800) */
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            color: #1f2937;
             min-height: 100vh;
         }
         
-        /* Tela de Autenticação Limpa e Moderna */
-        #auth-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #e5e7eb; /* Cinza um pouco mais escuro (Tailwind gray-200) */
+        /* Transições de Página (SPA) */
+        .page-view {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            display: none; /* Oculto por padrão */
+            width: 100%;
         }
-        #auth-card {
-            background-color: white;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            border-radius: 1rem; /* Cantos bem arredondados */
+        
+        .page-view.active {
+            opacity: 1;
+            transform: translateY(0);
+            display: block; 
         }
 
-        /* Estilos dos Containers Principais */
-        .content-container {
-            background-color: white;
-            border: 1px solid #e5e7eb; /* Borda Cinza Clara (Tailwind gray-200) */
+        /* Auth container precisa ser flex quando ativo para centralizar */
+        #auth-container.active {
+            display: flex;
+        }
+
+        /* Estilização Personalizada da Tabela */
+        .modern-table-container {
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            border-radius: 0.75rem; /* Cantos arredondados */
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background: white;
         }
         
-        /* Inputs e Selects Modernizados */
-        input:focus, select:focus {
-            border-color: #3b82f6 !important; /* Azul Primário */
-            box-shadow: 0 0 0 1px #3b82f6 !important;
-            outline: none;
-        }
-        input, select {
-            background-color: #f9fafb; /* Cinza bem claro (Tailwind gray-50) */
-            color: #1f2937;
-            border: 1px solid #d1d5db; /* Cinza (Tailwind gray-300) */
-            border-radius: 0.5rem; /* Cantos arredondados */
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
         
-        /* Tabelas com Novo Design Limpo */
         th {
-            background-color: #f9fafb; /* Cinza bem claro */
-            color: #4b5563; /* Texto cinza escuro */
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
             text-transform: uppercase;
             font-size: 0.75rem;
             letter-spacing: 0.05em;
-            font-weight: 600;
-            padding: 12px 16px;
-            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
         }
+
         td {
-            padding: 12px 16px;
-            border-bottom: 1px solid #e5e7eb; /* Cinza claro */
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
         }
-        .data-row:nth-child(even) {
-            background-color: #f9fafb; /* Fundo alternado sutil */
+        
+        .data-row {
+            transition: background-color 0.2s;
         }
         .data-row:hover {
-            background-color: #dbeafe; /* Azul bem claro no hover */
+            background-color: #f8fafc;
+        }
+
+        /* Inputs Modernos */
+        .input-field {
+            transition: all 0.2s;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            background-color: #fff;
+        }
+        .input-field:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            outline: none;
         }
         
-        /* Botões com o Novo Tema */
-        .action-button {
-            background-color: #3b82f6; /* Azul Primário */
+        /* Input Readonly */
+        .input-field[readonly] {
+            background-color: #f1f5f9;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        /* Botões com Gradiente e Sombra */
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: white;
             font-weight: 500;
-            border: none;
+            padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
         }
-        .action-button:hover {
-            background-color: #2563eb; /* Azul mais escuro */
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px -1px rgba(37, 99, 235, 0.4);
         }
-        .secondary-button {
-            background-color: transparent;
-            border: 1px solid #d1d5db; /* Borda cinza */
-            color: #374151; /* Texto cinza escuro */
+        .btn-primary:active {
+            transform: translateY(0);
         }
-        .secondary-button:hover {
-            background-color: #f9fafb;
-            border-color: #9ca3af;
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-secondary:hover {
+            background-color: #f8fafc;
+            border-color: #94a3b8;
+            color: #1e293b;
+        }
+
+        /* Cards do Dashboard */
+        .dash-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0);
+            cursor: pointer;
+        }
+        .dash-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: #bfdbfe;
         }
         
-        .dashboard-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid #e5e7eb;
+        /* Scrollbar estilizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            border-color: #3b82f6; /* Borda azul no hover */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c7c7c7; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0; 
         }
     </style>
+
     <!-- Importando Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, addDoc, onSnapshot, collection, query, serverTimestamp, setLogLevel, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, addDoc, onSnapshot, collection, query, where, getDocs, updateDoc, serverTimestamp, setLogLevel, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- GERENCIADOR DE PÁGINAS (Router Simples) ---
+        function navigateTo(pageId) {
+            // Esconde todas as páginas
+            document.querySelectorAll('.page-view').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Mostra a página desejada
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        }
 
         // --- LÓGICA DE NAVEGAÇÃO INTERNA (Login/Cadastro) ---
         function toggleAuthForms() {
@@ -139,18 +228,15 @@
             appId: "1:524659153893:web:118326d46946ee60306d0c",
             measurementId: "G-BD19J1CTCZ"
         };
-        // ----------------------------------------------------
 
-        // --- LÓGICA DO FIREBASE E APLICAÇÃO ---
         setLogLevel('Debug');
         
         let app, db, auth;
         let userId = null;
         let isAuthReady = false;
         let allDepartures = [];
-        let unsubscribe; // Para o listener do snapshot
+        let unsubscribe;
         
-        // Referências do DOM
         const logTableBody = document.getElementById('log-table-body');
         const summaryTableBody = document.getElementById('summary-table-body');
         const weeklySummaryTableBody = document.getElementById('weekly-summary-table-body');
@@ -160,6 +246,7 @@
         const weekNumberFilterInput = document.getElementById('week-number-filter');
         const monthFilterInput = document.getElementById('month-filter');
         const materialInput = document.getElementById('material-name');
+        const unitInput = document.getElementById('unit_of_measure');
         const formStatus = document.getElementById('form-status');
         const loadingIndicator = document.getElementById('loading-indicator');
         const userIdDisplay = document.getElementById('user-id-display');
@@ -174,7 +261,6 @@
         const semanalContainer = document.getElementById('semanal-container');
         const mensalContainer = document.getElementById('mensal-container');
 
-        // --- LÓGICA DE NAVEGAÇÃO PÓS-LOGIN ---
         function showDashboard() {
             [dashboardContainer].forEach(c => c.classList.remove('hidden'));
             [registroContainer, relatoriosContainer, semanalContainer, mensalContainer].forEach(c => c.classList.add('hidden'));
@@ -201,12 +287,8 @@
         }
         window.showMensal = showMensal;
 
-        // Validação da configuração do Firebase
         if (!firebaseConfig || !firebaseConfig.projectId || firebaseConfig.projectId === "SEU_PROJETO_ID") {
             console.error("CONFIGURAÇÃO DO FIREBASE INCOMPLETA!");
-            const firebaseErrorDiv = document.getElementById('firebase-error');
-            firebaseErrorDiv.textContent = "ERRO: A configuração do Firebase está faltando.";
-            firebaseErrorDiv.style.display = 'block';
         } else {
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
@@ -215,7 +297,6 @@
 
         const collectionPath = `saidas_materiais`;
         
-        // --- LÓGICA DE AUTENTICAÇÃO ---
         const handleRegister = (e) => {
             e.preventDefault();
             const email = document.getElementById('register-email').value;
@@ -256,33 +337,23 @@
             signOut(auth);
         };
         
-        // --- FUNÇÕES DE DATA ---
         function getWeekOfMonthDateRange(yearMonth, weekNumber) {
             const [year, month] = yearMonth.split('-').map(Number);
-            const weekNum = parseInt(weekNumber, 10);
-            
             let startDay, endDay;
-            if (weekNum === 1) {
-                startDay = 1;
-                endDay = 7;
-            } else if (weekNum === 2) {
-                startDay = 8;
-                endDay = 14;
-            } else if (weekNum === 3) {
-                startDay = 15;
-                endDay = 21;
-            } else { // weekNum é 4
-                startDay = 22;
-                endDay = new Date(year, month, 0).getDate(); // Último dia do mês
+            if (weekNumber === 'q1') {
+                startDay = 1; endDay = 15;
+            } else if (weekNumber === 'q2') {
+                startDay = 16; endDay = new Date(year, month, 0).getDate(); 
+            } else {
+                const weekNum = parseInt(weekNumber, 10);
+                if (weekNum === 1) { startDay = 1; endDay = 7; } 
+                else if (weekNum === 2) { startDay = 8; endDay = 14; } 
+                else if (weekNum === 3) { startDay = 15; endDay = 21; } 
+                else { startDay = 22; endDay = new Date(year, month, 0).getDate(); }
             }
-
             const startDate = new Date(year, month - 1, startDay);
             const endDate = new Date(year, month - 1, endDay);
-            
-            return {
-                start: startDate.toISOString().split('T')[0],
-                end: endDate.toISOString().split('T')[0]
-            };
+            return { start: startDate.toISOString().split('T')[0], end: endDate.toISOString().split('T')[0] };
         }
         
         function populateMonthSelectors() {
@@ -296,22 +367,23 @@
                 d.setMonth(d.getMonth() - 1);
             }
             weekMonthFilterInput.innerHTML = months.map(m => `<option value="${m.value}">${m.text}</option>`).join('');
-            if(monthFilterInput) {
-                monthFilterInput.value = months[0].value;
-            }
+            if(monthFilterInput) { monthFilterInput.value = months[0].value; }
         }
 
         if (auth) {
             onAuthStateChanged(auth, (user) => {
                 loadingIndicator.style.display = 'none';
                 if (user) {
+                    // --- USUÁRIO LOGADO: MOSTRAR APP ---
                     userId = user.uid;
                     isAuthReady = true;
                     userIdDisplay.textContent = `${user.email}`;
-                    document.getElementById('auth-container').classList.add('hidden');
-                    document.getElementById('main-app-container').classList.remove('hidden');
-                    showDashboard();
-                    window.scrollTo(0, 0);
+                    
+                    // Navega para a página principal
+                    navigateTo('main-app-container');
+                    
+                    showDashboard(); 
+                    
                     const today = new Date();
                     document.getElementById('date').value = today.toISOString().split('T')[0];
                     document.getElementById('date-filter').value = today.toISOString().split('T')[0];
@@ -321,9 +393,9 @@
                     weekMonthFilterInput.value = currentMonth;
                     if (!unsubscribe) setupRealtimeListener();
                 } else {
+                    // --- USUÁRIO DESLOGADO: MOSTRAR LOGIN ---
                     userId = null; isAuthReady = false;
-                    document.getElementById('auth-container').classList.remove('hidden');
-                    document.getElementById('main-app-container').classList.add('hidden');
+                    navigateTo('auth-container');
                 }
             });
         }
@@ -331,54 +403,73 @@
         document.getElementById('register-form').addEventListener('submit', handleRegister);
         document.getElementById('logout-button').addEventListener('click', handleLogout);
         
-        // --- LÓGICA PRINCIPAL DA APLICAÇÃO ---
         async function registerDeparture(material, quantity, date, destination, unit) {
             if (!isAuthReady) return false;
             if (!material || isNaN(quantity) || quantity <= 0 || !date || !destination || !unit) {
-                formStatus.textContent = `ERRO: Preencha todos os campos corretamente.`;
+                formStatus.textContent = `Preencha todos os campos corretamente.`;
                 formStatus.className = 'text-sm mt-3 sm:mt-0 sm:ml-4 font-semibold text-red-600';
                 return false;
             }
+            const materialUpper = material.toUpperCase();
+            const destinationUpper = destination.toUpperCase();
+            const unitUpper = unit.toUpperCase();
             try {
-                await addDoc(collection(db, collectionPath), {
-                    material: material.toUpperCase(), quantity, date, 
-                    destination: destination.toUpperCase(), unit_of_measure: unit.toUpperCase(),
-                    timestamp: serverTimestamp(), userId, userEmail: auth.currentUser.email
-                });
-                formStatus.textContent = `Saída de "${material}" registrada.`;
+                const q = query(
+                    collection(db, collectionPath),
+                    where("date", "==", date),
+                    where("material", "==", materialUpper),
+                    where("destination", "==", destinationUpper),
+                    where("unit_of_measure", "==", unitUpper)
+                );
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    const docToUpdate = querySnapshot.docs[0];
+                    const currentData = docToUpdate.data();
+                    const newQuantity = currentData.quantity + quantity;
+                    await updateDoc(doc(db, collectionPath, docToUpdate.id), {
+                        quantity: newQuantity,
+                        timestamp: serverTimestamp()
+                    });
+                    formStatus.textContent = `Atualizado: ${material} (Total: ${newQuantity} ${unitUpper})`;
+                } else {
+                    await addDoc(collection(db, collectionPath), {
+                        material: materialUpper, quantity, date, destination: destinationUpper, unit_of_measure: unitUpper,
+                        timestamp: serverTimestamp(), userId, userEmail: auth.currentUser.email
+                    });
+                    formStatus.textContent = `Saída de "${material}" registrada.`;
+                }
                 formStatus.className = 'text-sm mt-3 sm:mt-0 sm:ml-4 font-semibold text-green-600';
                 return true;
             } catch (e) {
+                console.error("Erro ao registrar:", e);
                 formStatus.textContent = "ERRO: Falha ao registrar.";
                 formStatus.className = 'text-sm mt-3 sm:mt-0 sm:ml-4 font-semibold text-red-600';
                 return false;
             }
         }
+
         const addDeparture = async (e) => { 
             e.preventDefault();
             const form = e.target;
+            const selectedMaterialKey = form.elements['material-name'].value;
+            const unitFromInput = form.elements['unit_of_measure'].value.trim();
             await registerDeparture(
-                form.elements['material-name'].value.trim(),
+                masterMaterialList[selectedMaterialKey]?.displayName || '',
                 parseFloat(form.elements['quantity'].value.trim()),
                 form.elements['date'].value.trim(),
                 form.elements['destination'].value.trim(),
-                form.elements['unit_of_measure'].value.trim()
+                unitFromInput
             );
             form.reset();
             document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            unitInput.value = '';
             form.elements['material-name'].focus();
         };
         addDepartureForm.addEventListener('submit', addDeparture);
 
         const deleteDeparture = async (id, material) => { 
             if (!isAuthReady) return;
-            if (confirm(`Tem certeza que deseja excluir o registro de "${material}"?`)) {
-                try {
-                    await deleteDoc(doc(db, collectionPath, id));
-                } catch (e) {
-                    alert("ERRO: Falha na exclusão.");
-                }
-            }
+            try { await deleteDoc(doc(db, collectionPath, id)); } catch (e) { console.error("ERRO: Falha na exclusão.", e); }
         };
         window.deleteDeparture = deleteDeparture;
 
@@ -391,12 +482,8 @@
                 renderData(dateFilterInput.value);
                 renderWeeklySummary();
                 renderMonthlySummary();
-                calculateTopMonth();
-            }, (error) => {
-                const firebaseErrorDiv = document.getElementById('firebase-error');
-                firebaseErrorDiv.textContent = "ERRO DE LEITURA: Verifique as Regras de Segurança do Firestore.";
-                firebaseErrorDiv.style.display = 'block';
-            });
+                populateDestinationSuggestions(allDepartures);
+            }, (error) => { console.error("Erro Firestore: ", error); });
         }
         
         dateFilterInput.addEventListener('change', () => isAuthReady && renderData(dateFilterInput.value));
@@ -404,25 +491,203 @@
         weekNumberFilterInput.addEventListener('change', () => isAuthReady && renderWeeklySummary());
         monthFilterInput.addEventListener('input', () => isAuthReady && renderMonthlySummary());
 
+        // --- LISTA MESTRA ---
+        const masterMaterialList = {
+            "CEBOLA": { displayName: "Cebola", category: "Hortifrúti", defaultUnit: "UN" },
+            "BATATAS": { displayName: "Batatas", category: "Hortifrúti", defaultUnit: "UN" },
+            "ABOBORA": { displayName: "Abóbora", category: "Hortifrúti", defaultUnit: "UN" },
+            "ABOBRINHA": { displayName: "Abobrinha", category: "Hortifrúti", defaultUnit: "UN" },
+            "CHUCHU": { displayName: "Chuchu", category: "Hortifrúti", defaultUnit: "UN" },
+            "CENOURA": { displayName: "Cenoura", category: "Hortifrúti", defaultUnit: "UN" },
+            "TOMATE": { displayName: "Tomate", category: "Hortifrúti", defaultUnit: "UN" },
+            "PIMENTAO": { displayName: "Pimentão", category: "Hortifrúti", defaultUnit: "UN" },
+            "CHEIRO VERDE": { displayName: "Cheiro verde", category: "Hortifrúti", defaultUnit: "UN" },
+            "AGRIAO": { displayName: "Agrião", category: "Hortifrúti", defaultUnit: "UN" },
+            "COUVE": { displayName: "Couve", category: "Hortifrúti", defaultUnit: "UN" },
+            "LORO": { displayName: "Loro", category: "Hortifrúti", defaultUnit: "UN" },
+            "BETERRABA": { displayName: "Beterraba", category: "Hortifrúti", defaultUnit: "UN" },
+            "AIPIM": { displayName: "Aipim", category: "Hortifrúti", defaultUnit: "UN" },
+            "BATATA DOCE": { displayName: "Batata doce", category: "Hortifrúti", defaultUnit: "UN" },
+            "PEPINO": { displayName: "Pepino", category: "Hortifrúti", defaultUnit: "UN" },
+            "REPOLHO": { displayName: "Repolho", category: "Hortifrúti", defaultUnit: "UN" },
+            "ALFACE": { displayName: "Alface", category: "Hortifrúti", defaultUnit: "UN" },
+            "QUIABO": { displayName: "Quiabo", category: "Hortifrúti", defaultUnit: "UN" },
+            "RUCULA": { displayName: "Rúcula", category: "Hortifrúti", defaultUnit: "UN" },
+            "ALHO": { displayName: "Alho", category: "Hortifrúti", defaultUnit: "UN" },
+            "MELANCIA": { displayName: "Melancia", category: "Frutas", defaultUnit: "UN" },
+            "BANANA": { displayName: "Banana", category: "Frutas", defaultUnit: "UN" },
+            "LIMAO": { displayName: "Limão", category: "Frutas", defaultUnit: "UN" },
+            "LARANJA": { displayName: "Laranja", category: "Frutas", defaultUnit: "UN" },
+            "MAMAO": { displayName: "Mamão", category: "Frutas", defaultUnit: "UN" },
+            "MELAO": { displayName: "Melão", category: "Frutas", defaultUnit: "UN" },
+            "ABACAXI": { displayName: "Abacaxi", category: "Frutas", defaultUnit: "UN" },
+            "MACA": { displayName: "Maçã", category: "Frutas", defaultUnit: "UN" },
+            "TANGERINA": { displayName: "Tangerina", category: "Frutas", defaultUnit: "UN" },
+            "MANGA": { displayName: "Manga", category: "Frutas", defaultUnit: "UN" },
+            "OVO": { displayName: "Ovo", category: "Proteínas & Frios", defaultUnit: "UN" },
+            "OVO DE CODORNA": { displayName: "Ovo de codorna", category: "Proteínas & Frios", defaultUnit: "UN" },
+            "SALSICHA": { displayName: "Salsicha", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "PRESUNTO": { displayName: "Presunto", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "MORTADELA": { displayName: "Mortadela", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "BACON": { displayName: "Bacon", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "LINGUICA": { displayName: "Linguiça", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "CARNE SECA": { displayName: "Carne seca", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "PEIXE": { displayName: "Peixe", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "COXA E SOBRECOXA": { displayName: "Coxa e sobrecoxa", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "PEITO DE FRANGO": { displayName: "Peito de frango", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "PATINHO": { displayName: "Patinho", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "LAGARTO": { displayName: "Lagarto", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "LOMBO": { displayName: "Lombo", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "MIOLO DA PA": { displayName: "Miolo da pá", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "PALETA SEM MUSCULO": { displayName: "Paleta sem músculo", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "COXAO DURO": { displayName: "Coxão duro", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "FIGADO": { displayName: "Fígado", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "COXAO MOLE": { displayName: "Coxão mole", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "CORACAO ALCATRA": { displayName: "Coração alcatra", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "MAMINHA DA ALCATRA": { displayName: "Maminha da alcatra", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "ACEM": { displayName: "Acém", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "GARGANTA SUINA": { displayName: "Garganta suína", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "MASCARA SUINA": { displayName: "Máscara suína", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "JOELHO SUINO": { displayName: "Joelho suíno", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "PONTA DE COSTELA": { displayName: "Ponta de costela", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "PATINHO CORTADO": { displayName: "Patinho cortado", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "CHARUTO DE CARNE MOIDA": { displayName: "Charuto de carne moída", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "CHARUTO DE PEITO DE FRANGO": { displayName: "Charuto de peito de frango", category: "Proteínas & Frios", defaultUnit: "KG" },
+            "QUEIJO": { displayName: "Queijo", category: "Laticínios", defaultUnit: "KG" },
+            "MANTEIGA": { displayName: "Manteiga", category: "Laticínios", defaultUnit: "KG" },
+            "REQUEIJAO NAZZA": { displayName: "Requeijão nazza", category: "Laticínios", defaultUnit: "UN" },
+            "LEITE EM PO": { displayName: "Leite em pó", category: "Laticínios", defaultUnit: "KG" },
+            "CREME DE LEITE": { displayName: "Creme de leite", category: "Laticínios", defaultUnit: "UN" },
+            "LEITE CONDENSADO": { displayName: "Leite condensado", category: "Laticínios", defaultUnit: "UN" },
+            "ARROZ BRANCO": { displayName: "Arroz branco", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "ARROZ PARABOLIZADO": { displayName: "Arroz parabolizado", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "MACARRAO": { displayName: "Macarrão", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "OLEO": { displayName: "Óleo", category: "Sacaria (Secos)", defaultUnit: "L" },
+            "ACUCAR": { displayName: "Açúcar", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "FEIJAO CARIOCA": { displayName: "Feijão carioca", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "FEIJAO PRETO": { displayName: "Feijão preto", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "CAFE": { displayName: "Café", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "FARINHA DE TRIGO": { displayName: "Farinha de trigo", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "FUBA": { displayName: "Fubá", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "FARINHA DE MANDIOCA": { displayName: "Farinha de mandioca", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "FARINHA DE ROSCA": { displayName: "Farinha de rosca", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "FEIJAO FRADINHO": { displayName: "Feijão Fradinho", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "SAL FINO": { displayName: "Sal fino", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "SAL GROSSO": { displayName: "Sal grosso", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "TRIGO KIBE": { displayName: "Trigo Kibe", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "AMIDO DE MILHO": { displayName: "Amido de milho", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "ACHOCOLATADO": { displayName: "Achocolatado", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "MISTURA DE PAO": { displayName: "Mistura de Pão", category: "Sacaria (Secos)", defaultUnit: "KG" },
+            "KETCHUP SACHE": { displayName: "Ketchup sachê", category: "Mercearia", defaultUnit: "UN" },
+            "MOSTARDA SACHE": { displayName: "Mostarda sachê", category: "Mercearia", defaultUnit: "UN" },
+            "MAIONESE": { displayName: "Maionese", category: "Mercearia", defaultUnit: "UN" },
+            "ERVILHA": { displayName: "Ervilha", category: "Mercearia", defaultUnit: "LATA" },
+            "COLORAU": { displayName: "Colorau", category: "Mercearia", defaultUnit: "KG" },
+            "EXTRATO DE TOMATE": { displayName: "Extrato de tomate", category: "Mercearia", defaultUnit: "LATA" },
+            "AZEITE DE OLIVA": { displayName: "Azeite de oliva", category: "Mercearia", defaultUnit: "L" },
+            "VINAGRE": { displayName: "Vinagre", category: "Mercearia", defaultUnit: "L" },
+            "OLEO MISTO": { displayName: "Óleo misto", category: "Mercearia", defaultUnit: "L" },
+            "MOLHO DE PIMENTA": { displayName: "Molho de pimenta", category: "Mercearia", defaultUnit: "UN" },
+            "AZEITONAS": { displayName: "Azeitonas", category: "Mercearia", defaultUnit: "KG" },
+            "BATATA PALHA": { displayName: "Batata palha", category: "Mercearia", defaultUnit: "PCTE" },
+            "MILHO EM CONSERVA": { displayName: "Milho em conserva", category: "Mercearia", defaultUnit: "LATA" },
+            "ERVILHA EM CONSERVA": { displayName: "Ervilha em conserva", category: "Mercearia", defaultUnit: "LATA" },
+            "LEITE DE COCO": { displayName: "Leite de coco", category: "Mercearia", defaultUnit: "UN" },
+            "ADOÇANTE": { displayName: "Adoçante", category: "Mercearia", defaultUnit: "UN" },
+            "CANELA EM PO": { displayName: "Canela em pó", category: "Mercearia", defaultUnit: "KG" },
+            "FERMENTO BIOLOGICO": { displayName: "Fermento biológico", category: "Mercearia", defaultUnit: "UN" },
+            "FERMENTO QUIMICO": { displayName: "Fermento químico", category: "Mercearia", defaultUnit: "UN" },
+            "CREME DE CONFEITEIRO": { displayName: "Creme de Confeiteiro", category: "Mercearia", defaultUnit: "KG" },
+            "GELATINA": { displayName: "Gelatina", category: "Mercearia", defaultUnit: "UN" },
+            "DOCE EM PASTA": { displayName: "Doce em pasta", category: "Mercearia", defaultUnit: "KG" },
+            "AGUA MINERAL": { displayName: "Água mineral", category: "Bebidas", defaultUnit: "UN" },
+            "AGUA MINERAL COM GAS": { displayName: "Água mineral com gás", category: "Bebidas", defaultUnit: "UN" },
+            "REFRIGERANTE SABOR GUARANA": { displayName: "Refrigerante sabor guaraná", category: "Bebidas", defaultUnit: "UN" },
+            "REFRIGERANTE SABOR UVA": { displayName: "Refrigerante sabor uva", category: "Bebidas", defaultUnit: "UN" },
+            "REFRIGERANTE SABOR COLA": { displayName: "Refrigerante sabor cola", category: "Bebidas", defaultUnit: "UN" },
+            "REFRIGERANTE COCA COLA": { displayName: "Refrigerante coca cola", category: "Bebidas", defaultUnit: "UN" },
+            "COCA COLA ZERO": { displayName: "Coca cola zero", category: "Bebidas", defaultUnit: "UN" },
+            "CERVEJA IMPERIO": { displayName: "Cerveja império", category: "Bebidas", defaultUnit: "UN" },
+            "CERVEJA HEINEKEN": { displayName: "Cerveja Heineken", category: "Bebidas", defaultUnit: "UN" },
+            "CERVEJA STELLA": { displayName: "Cerveja Stella", category: "Bebidas", defaultUnit: "UN" },
+            "RED BULL": { displayName: "Red bull", category: "Bebidas", defaultUnit: "UN" },
+            "SMIRNOFF ICE": { displayName: "Smirnoff ice", category: "Bebidas", defaultUnit: "UN" },
+            "KOVAK": { displayName: "Kovak", category: "Bebidas", defaultUnit: "UN" },
+            "VINHO ESPUMANTE": { displayName: "Vinho Espumante", category: "Bebidas", defaultUnit: "UN" },
+            "GIN": { displayName: "Gin", category: "Bebidas", defaultUnit: "UN" },
+            "MONIN": { displayName: "Monin", category: "Bebidas", defaultUnit: "UN" },
+            "XAROPE DE GUARANA": { displayName: "Xarope de guaraná", category: "Bebidas", defaultUnit: "L" },
+            "XAROPE DE CAJU": { displayName: "Xarope de caju", category: "Bebidas", defaultUnit: "L" },
+            "SUCO EM PO": { displayName: "Suco em pó", category: "Bebidas", defaultUnit: "KG" },
+            "GATORADE": { displayName: "Gatorade", category: "Bebidas", defaultUnit: "UN" },
+            "GUARACAMP": { displayName: "Guaracamp", category: "Bebidas", defaultUnit: "UN" },
+            "MASSA DE PASTEL": { displayName: "Massa de Pastel", category: "Congelados & Padaria", defaultUnit: "KG" },
+            "HAMBURGUER": { displayName: "Hambúrguer", category: "Congelados & Padaria", defaultUnit: "UN" },
+            "BATATA FRITA": { displayName: "Batata frita", category: "Congelados & Padaria", defaultUnit: "KG" },
+            "PAO DE QUEIJO": { displayName: "Pão de queijo", category: "Congelados & Padaria", defaultUnit: "KG" },
+            "SALGADINHO": { displayName: "Salgadinho", category: "Congelados & Padaria", defaultUnit: "KG" },
+            "MARIOLA": { displayName: "Mariola", category: "Snacks", defaultUnit: "UN" },
+            "AMENDOIM": { displayName: "Amendoim", category: "Snacks", defaultUnit: "KG" },
+            "ROSQUINHA MABEL": { displayName: "Rosquinha Mabel", category: "Snacks", defaultUnit: "PCTE" },
+            "PACOCA": { displayName: "Paçoca", category: "Snacks", defaultUnit: "UN" },
+            "GELEIA DE MOCOTO": { displayName: "Geleia de mocotó", category: "Snacks", defaultUnit: "UN" },
+            "SEQUILHOS": { displayName: "Sequilhos", category: "Snacks", defaultUnit: "PCTE" },
+            "PIT STOP": { displayName: "Pit Stop", category: "Snacks", defaultUnit: "PCTE" },
+            "ATIVPLUS": { displayName: "AtivPlus", category: "Snacks", defaultUnit: "UN" },
+            "BISCOITO TUCS": { displayName: "Biscoito Tucs", category: "Snacks", defaultUnit: "PCTE" },
+            "BISCOITO PASSATEMPO": { displayName: "Biscoito passatempo", category: "Snacks", defaultUnit: "PCTE" },
+            "BISCOITO AMANTEIGADO": { displayName: "Biscoito amanteigado", category: "Snacks", defaultUnit: "PCTE" },
+            "AMANTEIGADO GOIABINHA": { displayName: "Amanteigado Goiabinha", category: "Snacks", defaultUnit: "PCTE" },
+            "BARRINHA DE RACAO": { displayName: "Barrinha de ração", category: "Snacks", defaultUnit: "UN" },
+            "RAPADURA": { displayName: "Rapadura", category: "Snacks", defaultUnit: "UN" },
+            "GELO": { displayName: "Gelo", category: "Outros", defaultUnit: "SACO" }
+        };
+
+        function getMaterialInfo(materialName) {
+            const normalizeString = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+            const cleanName = normalizeString(materialName);
+            if (masterMaterialList[cleanName]) {
+                 return { displayName: masterMaterialList[cleanName].displayName, category: masterMaterialList[cleanName].category };
+            }
+            const foundKey = Object.keys(masterMaterialList).find(key => 
+                normalizeString(masterMaterialList[key].displayName) === cleanName
+            );
+            if (foundKey) {
+                return { displayName: masterMaterialList[foundKey].displayName, category: masterMaterialList[foundKey].category };
+            }
+            return { displayName: materialName, category: "Outros" };
+        }
+
+        function populateDestinationSuggestions(departures) {
+            const destinationDatalist = document.getElementById('destination-suggestions');
+            if (!destinationDatalist) return;
+            const destinations = departures.map(d => d.destination ? d.destination.toUpperCase() : null).filter(Boolean);
+            const uniqueDestinations = [...new Set(destinations)];
+            destinationDatalist.innerHTML = uniqueDestinations.sort().map(d => `<option value="${d}"></option>`).join('');
+        }
+
+        const unitSuggestions = ["UN", "KG", "L", "Saco", "Caixa", "Pç", "Pcte", "Fardo", "Balde", "Galao"];
+
         function renderData(selectedDate) {
             logTableBody.innerHTML = '';
             analysisOutput.innerHTML = '';
             const filtered = allDepartures.filter(d => d.date === selectedDate);
             if (filtered.length === 0) {
-                logTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-gray-500">Nenhuma saída registrada para ${selectedDate}.</td></tr>`; 
+                logTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-gray-400">Nenhuma saída registrada para ${selectedDate}.</td></tr>`; 
             } else {
                 logTableBody.innerHTML = filtered.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0))
                 .map((item) => {
                     const time = item.timestamp?.toDate ? item.timestamp.toDate().toLocaleTimeString('pt-BR') : 'N/A';
+                    const info = getMaterialInfo(item.material);
                     return `<tr class="data-row">
-                            <td class="text-sm text-gray-600">${time}</td>
-                            <td class="text-sm font-medium text-gray-900">${item.material}</td>
-                            <td class="text-sm text-gray-500">${item.unit_of_measure || 'N/A'}</td>
-                            <td class="text-sm text-blue-600 font-semibold">${item.quantity}</td>
-                            <td class="text-sm text-gray-500">${item.destination || 'N/A'}</td>
-                            <td class="text-sm text-gray-500">${item.userEmail ? item.userEmail.split('@')[0] : ''}</td>
-                            <td><button onclick="deleteDeparture('${item.id}', '${item.material}')" class="p-1 rounded-full text-red-500 hover:bg-red-100" title="Excluir"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button></td>
-                        </tr>`;
+                                <td class="text-sm text-gray-600">${time}</td>
+                                <td class="text-sm font-medium text-gray-900">${info.displayName}</td>
+                                <td class="text-sm text-gray-500">${item.unit_of_measure || 'N/A'}</td>
+                                <td class="text-sm text-brand-600 font-semibold">${item.quantity}</td>
+                                <td class="text-sm text-gray-500">${item.destination || 'N/A'}</td>
+                                <td class="text-sm text-gray-500">${item.userEmail ? item.userEmail.split('@')[0] : ''}</td>
+                                <td><button onclick="deleteDeparture('${item.id}', '${item.material}')" class="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors" title="Excluir"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button></td>
+                            </tr>`;
                 }).join('');
             }
             calculateSummary(filtered, summaryTableBody);
@@ -434,7 +699,40 @@
             if (!yearMonth || !weekNumber) return;
             const dateRange = getWeekOfMonthDateRange(yearMonth, weekNumber);
             const filtered = allDepartures.filter(d => d.date >= dateRange.start && d.date <= dateRange.end);
-            calculateSummary(filtered, weeklySummaryTableBody);
+            weeklySummaryTableBody.innerHTML = '';
+            if (filtered.length === 0) {
+                weeklySummaryTableBody.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-400">Nenhum dado para este período.</td></tr>`;
+                return;
+            }
+            const summaryByCategory = {};
+            filtered.forEach(item => {
+                const info = getMaterialInfo(item.material);
+                const category = info.category;
+                const key = `${info.displayName}|${item.unit_of_measure || 'UNID'}`;
+                if (!summaryByCategory[category]) summaryByCategory[category] = {};
+                if (!summaryByCategory[category][key]) summaryByCategory[category][key] = 0;
+                summaryByCategory[category][key] += item.quantity;
+            });
+            const sortedCategories = Object.keys(summaryByCategory).sort();
+            sortedCategories.forEach(category => {
+                weeklySummaryTableBody.innerHTML += `
+                    <tr class="bg-brand-50">
+                        <td colspan="3" class="text-xs font-bold text-brand-900 uppercase tracking-wider py-2 px-4">${category}</td>
+                    </tr>
+                `;
+                const sortedMaterials = Object.keys(summaryByCategory[category]).sort();
+                sortedMaterials.forEach(key => {
+                    const [material, unit] = key.split('|');
+                    const quantity = summaryByCategory[category][key];
+                    weeklySummaryTableBody.innerHTML += `
+                        <tr class="data-row">
+                            <td class="text-sm font-medium text-gray-900 pl-8">${material}</td>
+                            <td class="text-sm text-gray-500">${unit}</td>
+                            <td class="text-sm font-bold text-brand-600">${quantity.toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+            });
         }
         
         function renderMonthlySummary() {
@@ -442,61 +740,75 @@
             if (!yearMonth) return;
             const filtered = allDepartures.filter(d => d.date && d.date.startsWith(yearMonth));
             calculateSummary(filtered, monthlySummaryTableBody);
-        }
-        
-        function calculateTopMonth() {
-            if (allDepartures.length === 0) {
-                topMonthOutput.innerHTML = '<p class="text-gray-500">Nenhum dado para analisar.</p>';
+            const highlightsOutput = document.getElementById('top-month-output'); 
+            if (filtered.length === 0) {
+                highlightsOutput.innerHTML = '<p class="text-gray-400 text-sm">Nenhum dado para analisar.</p>';
                 return;
             }
-            const monthlyTotals = {};
-            allDepartures.forEach(item => {
-                if(item.date) {
-                    const monthKey = item.date.substring(0, 7);
-                    monthlyTotals[monthKey] = (monthlyTotals[monthKey] || 0) + item.quantity;
-                }
+            const materialSummary = {};
+            filtered.forEach(item => {
+                const info = getMaterialInfo(item.material);
+                const key = `${info.displayName}|${item.unit_of_measure || 'UNID'}`;
+                materialSummary[key] = (materialSummary[key] || 0) + item.quantity;
             });
-            let topMonth = '';
-            let maxQuantity = 0;
-            for (const month in monthlyTotals) {
-                if (monthlyTotals[month] > maxQuantity) {
-                    maxQuantity = monthlyTotals[month];
-                    topMonth = month;
+            let topMaterial = { name: 'N/A', unit: '', quantity: 0 };
+            for (const key in materialSummary) {
+                if (materialSummary[key] > topMaterial.quantity) {
+                    const [name, unit] = key.split('|');
+                    topMaterial = { name, unit: `(${unit})`, quantity: materialSummary[key] };
                 }
             }
-            if(!topMonth) {
-                topMonthOutput.innerHTML = '<p class="text-gray-500">Nenhum dado para analisar.</p>';
-                return;
+            const dailySummary = {};
+            filtered.forEach(item => {
+                dailySummary[item.date] = (dailySummary[item.date] || 0) + item.quantity;
+            });
+            let topDay = { date: 'N/A', quantity: 0 };
+            for (const date in dailySummary) {
+                if (dailySummary[date] > topDay.quantity) {
+                    topDay = { date, quantity: dailySummary[date] };
+                }
             }
-            const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-            const [year, monthNum] = topMonth.split('-');
-            const monthName = monthNames[parseInt(monthNum, 10) - 1];
-            topMonthOutput.innerHTML = `
-                <p class="text-lg text-gray-600">Mês de Maior Consumo</p>
-                <p class="text-4xl font-bold text-blue-600 my-2">${monthName} de ${year}</p>
-                <p class="text-lg text-gray-500">Total de <span class="font-bold text-gray-800">${maxQuantity.toFixed(2)}</span> itens</p>
+            let formattedDate = 'N/A';
+            if (topDay.date !== 'N/A') {
+                const [year, month, day] = topDay.date.split('-');
+                formattedDate = `${day}/${month}/${year}`;
+            }
+            highlightsOutput.innerHTML = `
+                <div class="text-left w-full space-y-6">
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <p class="text-xs font-bold text-brand-500 uppercase mb-1">Material de Maior Saída</p>
+                        <p class="text-xl font-bold text-gray-800">${topMaterial.name} <span class="text-sm font-normal text-gray-400">${topMaterial.unit}</span></p>
+                        <p class="text-sm text-gray-500 mt-1">Total: <span class="font-bold text-gray-700">${topMaterial.quantity.toFixed(2)}</span></p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <p class="text-xs font-bold text-brand-500 uppercase mb-1">Pico de Demanda</p>
+                        <p class="text-xl font-bold text-gray-800">${formattedDate}</p>
+                        <p class="text-sm text-gray-500 mt-1">Total: <span class="font-bold text-gray-700">${topDay.quantity.toFixed(2)}</span> itens</p>
+                    </div>
+                </div>
             `;
         }
-
+        
         function calculateSummary(filteredData, tableBody) {
             tableBody.innerHTML = '';
             const summary = {};
             filteredData.forEach(item => {
-                const key = `${item.material}|${item.unit_of_measure || 'UNID'}`;
+                const info = getMaterialInfo(item.material);
+                const key = `${info.displayName}|${item.unit_of_measure || 'UNID'}`;
                 summary[key] = (summary[key] || 0) + item.quantity;
             });
             const keys = Object.keys(summary).sort();
             if (keys.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-gray-500">Nenhum dado para este período.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-400">Nenhum dado para este período.</td></tr>`;
                 return;
             }
             tableBody.innerHTML = keys.map(key => {
                 const [material, unit] = key.split('|');
                 return `
                     <tr class="data-row">
-                        <td class="text-base font-semibold text-gray-900">${material}</td>
+                        <td class="text-sm font-medium text-gray-900">${material}</td>
                         <td class="text-sm text-gray-500">${unit}</td>
-                        <td class="text-base font-bold text-blue-600">${summary[key].toFixed(2)}</td>
+                        <td class="text-sm font-bold text-brand-600">${summary[key].toFixed(2)}</td>
                     </tr>
                 `;
             }).join('');
@@ -505,24 +817,24 @@
         const generateAnalysis = async () => {
              const tableRows = summaryTableBody.children;
             if (tableRows.length === 0 || (tableRows.length === 1 && tableRows[0].children[0].colSpan === 3)) {
-                analysisOutput.innerHTML = '<p class="text-red-600 font-semibold">ERRO: Sem dados para analisar no dia selecionado.</p>';
+                analysisOutput.innerHTML = '<p class="text-red-600 font-semibold text-sm">Sem dados para analisar no dia selecionado.</p>';
                 return;
             }
-            analysisOutput.innerHTML = '<p class="text-blue-600 font-semibold animate-pulse">Processando relatório...</p>';
+            analysisOutput.innerHTML = '<p class="text-brand-600 font-semibold animate-pulse text-sm">Gerando insights com IA...</p>';
             let data = Array.from(tableRows).map(row => `${row.children[0].textContent} (${row.children[1].textContent}): ${row.children[2].textContent}`);
             const userQuery = `Analise a seguinte lista de consumo diário e gere um breve relatório para o Gerente de Logística. Destaque os 3 itens de maior consumo e forneça uma sugestão de ação (ex: 'Monitorar estoque'). Lista: ${data.join('; ')}`;
             const systemPrompt = "Você é um Analista Logístico de IA. Sua resposta deve ser um 'STATUS REPORT' formal em português. Use Markdown (negrito e listas).";
-            const apiKey = ""; 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const apiKey = ""; // MANTENHA SUA CHAVE AQUI
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
             const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] }, };
             try {
                 const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const result = await response.json();
                 const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "Falha ao gerar análise.";
-                analysisOutput.innerHTML = `<div class="p-4 bg-gray-50 border border-gray-200 mt-4 text-sm whitespace-pre-wrap rounded-lg">${text}</div>`;
+                analysisOutput.innerHTML = `<div class="p-4 bg-brand-50 border border-brand-100 mt-4 text-sm whitespace-pre-wrap rounded-lg text-gray-700">${text}</div>`;
             } catch (error) {
-                analysisOutput.innerHTML = '<p class="text-red-600 font-semibold">ERRO DE COMUNICAÇÃO: Verifique a conexão.</p>';
+                analysisOutput.innerHTML = '<p class="text-red-600 font-semibold text-sm">Erro de comunicação com a IA.</p>';
             }
         };
         window.generateAnalysis = generateAnalysis;
@@ -534,24 +846,25 @@
                 const trimmedLine = line.trim();
                 if (!trimmedLine) continue;
                 const parts = trimmedLine.split(/\s+/).filter(Boolean);
-                if (parts.length < 3) continue; 
+                if (parts.length < 3) { errorCount++; errorLines.push(index + 1); continue; }
                 const destination = parts.length > 3 ? parts.pop() : 'COZINHA';
                 let quantityStr = parts.pop();
-                const unit = parts.pop();
-                const material = parts.join(' ');
+                const unit = parts.pop(); 
+                const materialNameFromFile = parts.join(' ');
+                const materialKey = materialNameFromFile.toUpperCase().trim();
+                const materialData = masterMaterialList[materialKey];
+                if (!materialData) { errorCount++; errorLines.push(index + 1); continue; }
                 if (quantityStr.includes('/')) quantityStr = quantityStr.split('/')[0].trim();
                 if (quantityStr.includes('½')) quantityStr = "0.5";
                 const quantity = parseFloat(quantityStr.replace(',', '.'));
-                if (isNaN(quantity) || !material || !unit) {
-                    errorCount++; errorLines.push(index + 1); continue;
-                }
-                const success = await registerDeparture(material, quantity, dateForBatch, destination, unit);
+                if (isNaN(quantity) || !unit) { errorCount++; errorLines.push(index + 1); continue; }
+                const success = await registerDeparture(materialData.displayName, quantity, dateForBatch, destination, unit);
                 if (success) successCount++;
                 else { errorCount++; errorLines.push(index + 1); }
             }
             let summaryMessage = `<p class="text-green-600 font-semibold">${successCount} registros importados com sucesso.</p>`;
-            if (errorCount > 0) summaryMessage += `<p class="text-red-600 font-semibold">${errorCount} linhas com formato inválido foram ignoradas. Linhas: ${errorLines.join(', ')}</p>`;
-            if (successCount === 0 && errorCount === 0) summaryMessage = `<p class="text-yellow-600 font-semibold">Nenhum dado válido para importação foi encontrado.</p>`;
+            if (errorCount > 0) summaryMessage += `<p class="text-red-600 font-semibold">${errorCount} linhas ignoradas (formato inválido). Linhas: ${errorLines.join(', ')}</p>`;
+            if (successCount === 0 && errorCount === 0) summaryMessage = `<p class="text-yellow-600 font-semibold">Nenhum dado encontrado.</p>`;
             batchUploadStatus.innerHTML = summaryMessage;
         }
 
@@ -560,284 +873,371 @@
             const file = fileInput.files[0];
             const dateForBatch = document.getElementById('date').value;
             if (!file || !dateForBatch) {
-                batchUploadStatus.innerHTML = `<p class="text-red-600 font-semibold">ERRO: Selecione um arquivo e a data da operação.</p>`;
+                batchUploadStatus.innerHTML = `<p class="text-red-600 font-semibold">Selecione arquivo e data.</p>`;
                 return;
             }
-            batchUploadStatus.innerHTML = '<p class="text-blue-600 font-semibold animate-pulse">Processando arquivo...</p>';
+            batchUploadStatus.innerHTML = '<p class="text-brand-600 font-semibold animate-pulse">Processando...</p>';
             const reader = new FileReader();
             if (file.name.endsWith('.docx')) {
                 reader.onload = async (e) => {
                     try {
                         const res = await mammoth.extractRawText({ arrayBuffer: e.target.result });
                         await processTextData(res.value, dateForBatch);
-                    } catch (err) { batchUploadStatus.innerHTML = '<p class="text-red-600 font-semibold">ERRO: Falha ao ler .docx.</p>'; }
+                    } catch (err) { batchUploadStatus.innerHTML = '<p class="text-red-600 font-semibold">Erro ao ler .docx.</p>'; }
                 };
                 reader.readAsArrayBuffer(file);
             } else if (file.name.endsWith('.txt')) {
                 reader.onload = async (e) => {
                     try { await processTextData(e.target.result, dateForBatch); } 
-                    catch (err) { batchUploadStatus.innerHTML = '<p class="text-red-600 font-semibold">ERRO: Falha ao ler .txt.</p>';}
+                    catch (err) { batchUploadStatus.innerHTML = '<p class="text-red-600 font-semibold">Erro ao ler .txt.</p>';}
                 };
                 reader.readAsText(file);
             } else {
-                 batchUploadStatus.innerHTML = '<p class="text-red-600 font-semibold">ERRO: Tipo de arquivo não suportado.</p>';
+                 batchUploadStatus.innerHTML = '<p class="text-red-600 font-semibold">Formato não suportado.</p>';
             }
         };
         window.handleFileUpload = handleFileUpload;
 
-        const materialSuggestions = ["Cebola", "Batatas", "Abóbora", "Abobrinha", "Chuchu", "Cenoura", "Tomate", "Pimentão", "Cheiro verde", "Agrião", "Couve", "Loro", "Beterraba", "Aipim", "Batata doce", "Pepino", "Repolho", "Alface", "Quiabo", "Rúcula", "Alho", "Melancia", "Banana", "Limão", "Laranja", "Mamão", "Melão", "Abacaxi", "Maçã", "Tangerina", "Manga", "Manteiga", "Água mineral", "Água mineral com gás", "Refrigerante sabor guaraná", "Refrigerante sabor uva", "Refrigerante sabor cola", "Refrigerante coca cola", "Coca cola zero", "Ovo", "Requeijão nazza", "Salsicha", "Queijo", "Presunto", "Mortadela", "Bacon", "Linguiça", "Carne seca", "Massa de Pastel", "Ovo de codorna", "Cerveja império", "Cerveja Heineken", "Cerveja Stella", "Red bull", "Smirnoff ice", "Kovak", "Vinho Espumante", "Gin", "Monin", "Peixe", "Coxa e sobrecoxa", "Peito de frango", "Patinho", "Lagarto", "Lombo", "Miolo da pá", "Paleta sem músculo", "Coxão duro", "Fígado", "Coxão mole", "Coração alcatra", "Maminha da alcatra", "Acém", "Hambúrguer", "Batata frita", "Pão de queijo", "Garganta suína", "Máscara suína", "Joelho suíno", "Ponta de costela", "Kibe", "Bolinha de queijo", "Salgadinho de aipim", "Coxinha", "Risole de camarão", "Gelo", "Patinho cortado", "Charuto de carne moída", "Charuto de peito de frango", "Arroz branco", "Arroz parabolizado", "Macarrão", "Óleo", "Açúcar", "Feijão carioca", "Feijão preto", "Leite em pó", "Café", "Farinha de trigo", "Fubá", "Farinha de mandioca", "Farinha de rosca", "Xarope de guaraná", "Xarope de caju", "Ketchup sachê", "Mostarda sachê", "Maionese", "Ervilha", "Colorau", "Feijão Fradinho", "Sal fino", "Sal grosso", "Trigo Kibe", "Extrato de tomate", "Azeite de oliva", "Vinagre", "Óleo misto", "Molho de pimenta", "Azeitonas", "Batata palha", "Milho em conserva", "Ervilha em conserva", "Leite de coco", "Creme de leite", "Leite condensado", "Adoçante", "Canela em pó", "Fermento biológico", "Fermento químico", "Creme de Confeiteiro", "Suco em pó", "Amido de milho", "Gelatina", "Doce em pasta", "Achocolatado", "Mariola", "Amendoim", "Rosquinha Mabel", "Paçoca", "Geleia de mocotó", "Sequilhos", "Pit Stop", "AtivPlus", "Gatorade", "Biscoito Tucs", "Biscoito passatempo", "Guaracamp", "Biscoito amanteigado", "Amanteigado Goiabinha", "Barrinha de ração", "Rapadura"];
-        const unitSuggestions = ["UN", "KG", "L", "Saco", "Caixa", "Pç", "Pcte", "Fardo", "Balde", "Galao"];
-        
-        function fillDatalists() {
-            const materialDatalist = document.getElementById('material-suggestions');
-            materialDatalist.innerHTML = materialSuggestions.map(m => `<option value="${m}"></option>`).join('');
-            const unitDatalist = document.getElementById('unit-suggestions');
-            unitDatalist.innerHTML = unitSuggestions.map(u => `<option value="${u}"></option>`).join('');
+        function populateMaterialSelector() {
+            const sortedMaterials = Object.keys(masterMaterialList).sort((a, b) => 
+                masterMaterialList[a].displayName.localeCompare(masterMaterialList[b].displayName)
+            );
+            sortedMaterials.forEach(key => {
+                const material = masterMaterialList[key];
+                const option = document.createElement('option');
+                option.value = key; 
+                option.textContent = material.displayName; 
+                materialInput.appendChild(option);
+            });
         }
-        window.onload = fillDatalists;
+        
+        function handleMaterialChange(e) {
+            const selectedKey = e.target.value;
+            if (selectedKey && masterMaterialList[selectedKey]) {
+                if (masterMaterialList[selectedKey].defaultUnit) {
+                    unitInput.value = masterMaterialList[selectedKey].defaultUnit;
+                }
+            }
+        }
+        function fillUnitDatalist() {
+            const unitDatalist = document.getElementById('unit-suggestions');
+            if (unitDatalist) { unitDatalist.innerHTML = unitSuggestions.map(u => `<option value="${u}"></option>`).join(''); }
+        }
+        materialInput.addEventListener('change', handleMaterialChange);
+        window.onload = () => {
+            populateMaterialSelector();
+            fillUnitDatalist();
+        };
     </script>
 </head>
 <body>
     
-    <div id="loading-indicator" class="fixed inset-0 bg-gray-100/50 flex justify-center items-center z-50 backdrop-blur-sm">
-        <p class="text-blue-600 font-semibold text-lg">Carregando Sistema...</p>
+    <div id="loading-indicator" class="fixed inset-0 bg-white/80 flex justify-center items-center z-50 backdrop-blur-sm transition-all">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4"></div>
+            <p class="text-brand-600 font-medium">Iniciando Sistema...</p>
+        </div>
     </div>
 
-    <div id="auth-container">
-        <div id="auth-card" class="max-w-md w-full p-8 md:p-10">
-            <!-- Container do Login -->
+    <div id="auth-container" class="page-view min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-brand-50 to-gray-200">
+        <div id="auth-card" class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 border border-white/50">
+            <!-- Login -->
             <div id="login-form-container">
-                <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Controle de Estoque</h1>
-                <p class="text-center text-gray-500 mb-6">Por favor, insira suas credenciais para continuar.</p>
-                <form id="login-form" class="space-y-6">
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-brand-100 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-800">Bem-vindo de volta</h1>
+                    <p class="text-gray-500 text-sm mt-1">Faça login para gerenciar seu estoque.</p>
+                </div>
+                <form id="login-form" class="space-y-5">
                     <div>
-                        <label for="login-email" class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" id="login-email" required class="mt-1 block w-full p-3">
+                        <label for="login-email" class="block text-xs font-semibold text-gray-700 uppercase mb-1">Email</label>
+                        <input type="email" id="login-email" required class="input-field" placeholder="seu@email.com">
                     </div>
                     <div>
-                        <label for="login-password" class="block text-sm font-medium text-gray-700">Senha</label>
-                        <input type="password" id="login-password" required class="mt-1 block w-full p-3">
+                        <label for="login-password" class="block text-xs font-semibold text-gray-700 uppercase mb-1">Senha</label>
+                        <input type="password" id="login-password" required class="input-field" placeholder="••••••••">
                     </div>
-                    <button type="submit" class="w-full action-button py-3 px-6 text-base">Entrar</button>
+                    <button type="submit" class="w-full btn-primary">Acessar Sistema</button>
                 </form>
-                <p class="mt-6 text-center text-sm text-gray-600">
-                    Não tem uma conta? <button onclick="toggleAuthForms()" class="font-semibold text-blue-600 hover:underline">Cadastre-se</button>
-                </p>
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-600">Não tem conta? <button onclick="toggleAuthForms()" class="font-semibold text-brand-600 hover:text-brand-700">Criar conta</button></p>
+                </div>
             </div>
-            <!-- Container do Cadastro -->
+            <!-- Cadastro -->
             <div id="register-form-container" class="hidden">
-                <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Criar Nova Conta</h1>
-                 <p class="text-center text-gray-500 mb-6">Preencha os campos para se registrar.</p>
-                <form id="register-form" class="space-y-6">
+                <div class="text-center mb-8">
+                    <h1 class="text-2xl font-bold text-gray-800">Criar Nova Conta</h1>
+                     <p class="text-gray-500 text-sm mt-1">Registre-se para começar.</p>
+                </div>
+                <form id="register-form" class="space-y-5">
                     <div>
-                        <label for="register-email" class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" id="register-email" required class="mt-1 block w-full p-3">
+                        <label for="register-email" class="block text-xs font-semibold text-gray-700 uppercase mb-1">Email</label>
+                        <input type="email" id="register-email" required class="input-field">
                     </div>
                     <div>
-                        <label for="register-password" class="block text-sm font-medium text-gray-700">Senha (mín. 6 caracteres)</label>
-                        <input type="password" id="register-password" required class="mt-1 block w-full p-3">
+                        <label for="register-password" class="block text-xs font-semibold text-gray-700 uppercase mb-1">Senha (mín. 6 car.)</label>
+                        <input type="password" id="register-password" required class="input-field">
                     </div>
-                    <button type="submit" class="w-full action-button py-3 px-6 text-base">Registrar</button>
+                    <button type="submit" class="w-full btn-primary">Registrar</button>
                 </form>
-                <p class="mt-6 text-center text-sm text-gray-600">
-                    Já tem uma conta? <button onclick="toggleAuthForms()" class="font-semibold text-blue-600 hover:underline">Faça o login</button>
-                </p>
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-600">Já tem conta? <button onclick="toggleAuthForms()" class="font-semibold text-brand-600 hover:text-brand-700">Fazer login</button></p>
+                </div>
             </div>
-            <div id="auth-status" class="mt-4"></div>
+            <div id="auth-status" class="mt-4 text-center text-sm font-medium"></div>
         </div>
     </div>
 
 
-    <div id="main-app-container" class="hidden p-4 sm:p-8 w-full">
-        <div class="max-w-7xl mx-auto">
-            <header class="mb-8 flex flex-col sm:flex-row justify-between sm:items-center">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">
-                        CONTROLE DE ESTOQUE
-                    </h1>
-                    <p id="user-id-display" class="text-sm text-gray-500"></p>
+    <div id="main-app-container" class="page-view pb-12">
+        <!-- Navbar Superior Moderno -->
+        <div class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-brand-600 text-white p-1.5 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-bold text-gray-900 leading-none">Controle de Estoque</h1>
+                            <p id="user-id-display" class="text-xs text-gray-500 mt-0.5"></p>
+                        </div>
+                    </div>
+                    <button id="logout-button" class="text-sm text-gray-500 hover:text-red-600 font-medium transition-colors flex items-center gap-1">
+                        Sair
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                    </button>
                 </div>
-                <button id="logout-button" class="mt-4 sm:mt-0 secondary-button text-sm font-medium py-2 px-4 rounded-lg transition duration-200">Sair</button>
-            </header>
+            </div>
+        </div>
 
-            <!-- PAINEL DE NAVEGAÇÃO (DASHBOARD) -->
-            <div id="dashboard-container" class="">
-                 <h2 class="text-2xl font-semibold text-gray-800 mb-6">Painel Principal</h2>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+            
+            <!-- DASHBOARD -->
+            <div id="dashboard-container">
+                 <div class="mb-6">
+                     <h2 class="text-2xl font-bold text-gray-800">Painel Principal</h2>
+                     <p class="text-gray-500">Selecione uma operação abaixo</p>
+                 </div>
                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                     <!-- Card 1: Registrar Saídas -->
-                     <div onclick="showRegistro()" class="dashboard-card cursor-pointer p-6 content-container flex flex-col items-center text-center">
-                         <div class="bg-blue-100 p-3 rounded-full mb-4"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></div>
-                         <h3 class="text-lg font-bold text-gray-800 mb-2">Registrar Saídas</h3>
-                         <p class="text-sm text-gray-500">Lance as saídas de material, manual ou em lote.</p>
-                     </div>
-                     <!-- Card 2: Relatório Diário -->
-                     <div onclick="showRelatorios()" class="dashboard-card cursor-pointer p-6 content-container flex flex-col items-center text-center">
-                         <div class="bg-green-100 p-3 rounded-full mb-4"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></div>
-                         <h3 class="text-lg font-bold text-gray-800 mb-2">Relatório Diário</h3>
-                         <p class="text-sm text-gray-500">Visualize logs e resumos de consumo do dia.</p>
-                     </div>
-                      <!-- Card 3: Análise Semanal -->
-                     <div onclick="showSemanal()" class="dashboard-card cursor-pointer p-6 content-container flex flex-col items-center text-center">
-                         <div class="bg-yellow-100 p-3 rounded-full mb-4"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>
-                         <h3 class="text-lg font-bold text-gray-800 mb-2">Análise Semanal</h3>
-                         <p class="text-sm text-gray-500">Consulte o consumo total por semana de um mês.</p>
-                     </div>
-                      <!-- Card 4: Análise Mensal -->
-                     <div onclick="showMensal()" class="dashboard-card cursor-pointer p-6 content-container flex flex-col items-center text-center">
-                         <div class="bg-purple-100 p-3 rounded-full mb-4"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg></div>
-                         <h3 class="text-lg font-bold text-gray-800 mb-2">Análise Mensal</h3>
-                         <p class="text-sm text-gray-500">Veja o consumo total por mês e o pico de demanda.</p>
-                     </div>
+                        <div onclick="showRegistro()" class="dash-card group">
+                            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900">Registrar Saídas</h3>
+                            <p class="text-sm text-gray-500 mt-1">Lançamento manual ou upload de arquivo em lote.</p>
+                        </div>
+                        
+                        <div onclick="showRelatorios()" class="dash-card group">
+                            <div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center mb-4 group-hover:bg-green-600 group-hover:text-white transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900">Relatório Diário</h3>
+                            <p class="text-sm text-gray-500 mt-1">Logs de transações e resumos do dia.</p>
+                        </div>
+                        
+                        <div onclick="showSemanal()" class="dash-card group">
+                            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900">Análise Semanal</h3>
+                            <p class="text-sm text-gray-500 mt-1">Visualizar consumo acumulado por semana.</p>
+                        </div>
+                        
+                        <div onclick="showMensal()" class="dash-card group">
+                            <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900">Análise Mensal</h3>
+                            <p class="text-sm text-gray-500 mt-1">Consumo mensal e destaques de demanda.</p>
+                        </div>
                  </div>
             </div>
 
-            <!-- SEÇÃO DE REGISTRO (Oculta) -->
+            <!-- REGISTRO -->
             <div id="registro-container" class="hidden">
-                 <button onclick="showDashboard()" class="secondary-button mb-6 font-semibold py-2 px-4 rounded-lg flex items-center text-sm"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>Voltar ao Painel</button>
-                 <h2 class="text-2xl font-semibold text-gray-800 mb-6">Registrar Saídas</h2>
-                <div class="p-6 md:p-8 mb-8 content-container">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-3">Registro Manual</h3>
-                    <form id="add-departure-form" class="space-y-6 pt-4"> 
-                        <div>
-                             <label for="material-name" class="block text-sm font-medium text-gray-700">1. Nome do Material</label>
-                             <input type="text" id="material-name" name="material-name" list="material-suggestions" required placeholder="Digite ou selecione o material" class="mt-1 block w-full p-3 uppercase">
-                             <datalist id="material-suggestions"></datalist>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="quantity" class="block text-sm font-medium text-gray-700">2. Quantidade</label>
-                                <input type="number" id="quantity" name="quantity" step="0.01" required min="0.01" placeholder="Ex: 1.5" class="mt-1 block w-full p-3">
-                            </div>
-                            <div>
-                                <label for="unit_of_measure" class="block text-sm font-medium text-gray-700">3. Unidade de Medida</label>
-                                <input type="text" id="unit_of_measure" name="unit_of_measure" list="unit-suggestions" required placeholder="Ex: KG, UN, L" class="mt-1 block w-full p-3 uppercase">
-                                <datalist id="unit-suggestions"></datalist>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="date" class="block text-sm font-medium text-gray-700">4. Data da Saída</label>
-                                <input type="date" id="date" required class="mt-1 block w-full p-3">
-                            </div>
-                            <div>
-                                <label for="destination" class="block text-sm font-medium text-gray-700">5. Destino</label>
-                                <input type="text" id="destination" name="destination" required placeholder="Ex: Cozinha Principal" class="mt-1 block w-full p-3">
-                            </div>
-                        </div>
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center pt-4">
-                            <button type="submit" class="w-full sm:w-auto action-button font-medium py-3 px-8">Executar Registro</button>
-                            <p id="form-status" class="text-sm mt-3 sm:mt-0 sm:ml-4 font-semibold"></p>
-                        </div>
-                    </form>
-                </div>
-                <div class="p-6 md:p-8 mb-8 content-container">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-3">Registro em Lote</h3>
-                    <div class="bg-gray-50 p-4 border border-dashed border-gray-300 mb-4 text-sm rounded-lg mt-4">
-                        <h4 class="font-semibold text-gray-800">Instruções:</h4>
-                        <p class="mt-2 text-gray-600">Crie um arquivo (.docx ou .txt) com as colunas na ordem: <code class="bg-gray-200 p-1 font-mono text-xs rounded">MATERIAL UNIDADE QUANTIDADE DESTINO</code></p>
-                        <p class="mt-2 text-gray-600"><strong>Importante:</strong> A data será a que estiver no campo "DATA" acima.</p>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center pt-4">
-                        <div>
-                            <label for="word-file-input" class="block text-sm font-medium text-gray-700 mb-1">Arquivo de dados</label>
-                            <input type="file" id="word-file-input" accept=".docx,.txt" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 cursor-pointer">
-                        </div>
-                        <div class="self-end">
-                             <button onclick="handleFileUpload()" class="w-full action-button font-medium py-3 px-8">Processar Arquivo</button>
+                 <button onclick="showDashboard()" class="btn-secondary mb-6 flex items-center gap-2 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
+                    Voltar
+                 </button>
+                 
+                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
+                            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                                <span class="w-1 h-6 bg-brand-600 rounded-full"></span>
+                                Registro Manual
+                            </h3>
+                            <form id="add-departure-form" class="space-y-6"> 
+                                <div>
+                                    <label for="material-name" class="block text-xs font-bold text-gray-500 uppercase mb-1">1. Material</label>
+                                    <select id="material-name" name="material-name" required class="input-field appearance-none bg-no-repeat bg-right pr-8">
+                                        <option value="" disabled selected>Selecione...</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="quantity" class="block text-xs font-bold text-gray-500 uppercase mb-1">2. Quantidade</label>
+                                        <input type="number" id="quantity" name="quantity" step="0.01" required min="0.01" placeholder="0.00" class="input-field">
+                                    </div>
+                                    <div>
+                                        <label for="unit_of_measure" class="block text-xs font-bold text-gray-500 uppercase mb-1">3. Unidade</label>
+                                        <input type="text" id="unit_of_measure" name="unit_of_measure" list="unit-suggestions" required placeholder="KG/UN" class="input-field uppercase">
+                                        <datalist id="unit-suggestions"></datalist>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="date" class="block text-xs font-bold text-gray-500 uppercase mb-1">4. Data</label>
+                                        <input type="date" id="date" required class="input-field text-gray-600">
+                                    </div>
+                                    <div>
+                                        <label for="destination" class="block text-xs font-bold text-gray-500 uppercase mb-1">5. Destino</label>
+                                        <input type="text" id="destination" name="destination" list="destination-suggestions" required value="COZINHA" class="input-field uppercase">
+                                        <datalist id="destination-suggestions"></datalist>
+                                    </div>
+                                </div>
+                                <div class="pt-4 flex items-center justify-between flex-wrap gap-4">
+                                    <button type="submit" class="btn-primary">Confirmar Saída</button>
+                                    <p id="form-status" class="text-sm font-medium"></p>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                     <div id="batch-upload-status" class="mt-4 text-sm font-semibold"></div>
-                </div>
+
+                    <div>
+                        <div class="bg-white rounded-xl shadow-sm p-8 border border-gray-100 h-full">
+                            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                                <span class="w-1 h-6 bg-purple-600 rounded-full"></span>
+                                Registro em Lote
+                            </h3>
+                            <div class="bg-purple-50 p-4 rounded-lg border border-purple-100 text-sm text-purple-900 mb-6">
+                                <p class="font-semibold mb-2">Formato do Arquivo:</p>
+                                <code class="bg-white px-2 py-1 rounded border border-purple-200 block w-full text-center mb-2">MATERIAL UNID QTD [DESTINO]</code>
+                                <p class="text-xs opacity-80">Aceita .docx ou .txt. O Material deve estar cadastrado.</p>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <label class="block w-full cursor-pointer group">
+                                    <span class="sr-only">Escolher arquivo</span>
+                                    <input type="file" id="word-file-input" accept=".docx,.txt" class="block w-full text-sm text-gray-500
+                                      file:mr-4 file:py-2.5 file:px-4
+                                      file:rounded-full file:border-0
+                                      file:text-sm file:font-semibold
+                                      file:bg-brand-50 file:text-brand-700
+                                      hover:file:bg-brand-100 transition-colors
+                                    "/>
+                                </label>
+                                <button onclick="handleFileUpload()" class="w-full btn-secondary text-brand-600 border-brand-200 hover:bg-brand-50">
+                                    Processar Arquivo
+                                </button>
+                            </div>
+                            <div id="batch-upload-status" class="mt-4 text-sm text-center"></div>
+                        </div>
+                    </div>
+                 </div>
             </div>
 
-            <!-- SEÇÃO DE RELATÓRIOS (Oculta) -->
+            <!-- RELATÓRIOS DIÁRIOS -->
             <div id="relatorios-container" class="hidden">
-                 <button onclick="showDashboard()" class="secondary-button mb-6 font-semibold py-2 px-4 rounded-lg flex items-center text-sm"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>Voltar ao Painel</button>
-                 <h2 class="text-2xl font-semibold text-gray-800 mb-6">Relatório Diário</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                    <div class="lg:col-span-3 p-6 content-container">
-                        <h3 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-3">Log de Transações</h3>
-                        <div class="my-4">
-                            <label for="date-filter" class="block text-sm font-medium text-gray-700">Selecionar Data:</label>
-                            <input type="date" id="date-filter" class="mt-1 block w-full p-2">
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full">
-                                <thead><tr><th>Hora</th><th>Material</th><th>Unid.</th><th>Qtd.</th><th>Destino</th><th>Por</th><th>Ações</th></tr></thead>
-                                <tbody id="log-table-body"></tbody>
-                            </table>
-                        </div>
+                 <button onclick="showDashboard()" class="btn-secondary mb-6 flex items-center gap-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>Voltar</button>
+                 
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Coluna da Esquerda: LOGS -->
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col">
+                         <div class="flex justify-between items-center mb-6 border-b pb-4">
+                            <h3 class="text-xl font-bold text-gray-800">Log de Transações</h3>
+                            <input type="date" id="date-filter" class="input-field w-auto py-1 px-3 text-sm">
+                         </div>
+                         <div class="modern-table-container">
+                             <div class="overflow-x-auto">
+                                <table>
+                                    <thead><tr><th>Hora</th><th>Material</th><th>Unid</th><th>Qtd</th><th>Destino</th><th>Usuário</th><th></th></tr></thead>
+                                    <tbody id="log-table-body"></tbody>
+                                </table>
+                             </div>
+                         </div>
                     </div>
-                    <div class="lg:col-span-2 p-6 content-container">
-                        <h3 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-3">Resumo do Dia</h3>
-                        <div class="overflow-x-auto my-4">
-                            <table class="min-w-full">
-                                <thead><tr><th>Material</th><th>Unid.</th><th>Total</th></tr></thead>
-                                <tbody id="summary-table-body"></tbody>
-                            </table>
+                    <!-- Coluna da Direita: RESUMO & IA -->
+                    <div class="space-y-6">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Resumo do Dia</h3>
+                            <div class="modern-table-container">
+                                <table>
+                                    <thead><tr><th>Item</th><th>Und</th><th>Total</th></tr></thead>
+                                    <tbody id="summary-table-body"></tbody>
+                                </table>
+                            </div>
                         </div>
-                        <div class="mt-6 border-t pt-4">
-                            <button onclick="generateAnalysis()" class="w-full action-button text-sm font-medium py-3 px-4">Gerar Análise (IA) ✨</button>
-                            <div id="analysis-output" class="mt-4 text-gray-600"></div>
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold text-gray-800">Análise Inteligente</h3>
+                                <span class="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">BETA</span>
+                            </div>
+                            <button onclick="generateAnalysis()" class="w-full btn-primary bg-gradient-to-r from-indigo-600 to-purple-600 border-0 shadow-md shadow-purple-200">
+                                Gerar Insights com IA ✨
+                            </button>
+                            <div id="analysis-output" class="mt-4 text-sm text-gray-600 leading-relaxed"></div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- SEÇÃO SEMANAL (Oculta) -->
+            <!-- SEMANAL -->
             <div id="semanal-container" class="hidden">
-                <button onclick="showDashboard()" class="secondary-button mb-6 font-semibold py-2 px-4 rounded-lg flex items-center text-sm"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>Voltar ao Painel</button>
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Análise Semanal</h2>
-                <div class="p-6 md:p-8 content-container">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-3">Consumo Semanal</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">
-                        <div>
-                            <label for="week-month-filter" class="block text-sm font-medium text-gray-700">Selecionar Mês:</label>
-                            <select id="week-month-filter" class="mt-1 block w-full p-2"></select>
-                        </div>
-                        <div>
-                            <label for="week-number-filter" class="block text-sm font-medium text-gray-700">Selecionar Semana:</label>
-                            <select id="week-number-filter" class="mt-1 block w-full p-2">
-                                <option value="1">Semana 1 (Dias 1-7)</option>
-                                <option value="2">Semana 2 (Dias 8-14)</option>
-                                <option value="3">Semana 3 (Dias 15-21)</option>
-                                <option value="4">Semana 4 (Dia 22 em diante)</option>
+                <button onclick="showDashboard()" class="btn-secondary mb-6 flex items-center gap-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>Voltar</button>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 border-b pb-4 gap-4">
+                        <h2 class="text-2xl font-bold text-gray-800">Consumo Semanal</h2>
+                        <div class="flex gap-4">
+                            <select id="week-month-filter" class="input-field py-2"></select>
+                            <select id="week-number-filter" class="input-field py-2">
+                                <option value="1">Semana 1</option>
+                                <option value="2">Semana 2</option>
+                                <option value="3">Semana 3</option>
+                                <option value="4">Semana 4+</option>
+                                <option disabled>────</option>
+                                <option value="q1">1ª Quinzena</option>
+                                <option value="q2">2ª Quinzena</option>
                             </select>
                         </div>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full">
-                            <thead><tr><th>Material</th><th>Unid.</th><th>Total Consumido</th></tr></thead>
-                            <tbody id="weekly-summary-table-body"></tbody>
-                        </table>
+                    <div class="modern-table-container">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead><tr><th>Material</th><th>Unidade</th><th>Total Consumido</th></tr></thead>
+                                <tbody id="weekly-summary-table-body"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- SEÇÃO MENSAL (Oculta) -->
+            <!-- MENSAL -->
             <div id="mensal-container" class="hidden">
-                 <button onclick="showDashboard()" class="secondary-button mb-6 font-semibold py-2 px-4 rounded-lg flex items-center text-sm"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>Voltar ao Painel</button>
-                 <h2 class="text-2xl font-semibold text-gray-800 mb-6">Análise Mensal</h2>
+                 <button onclick="showDashboard()" class="btn-secondary mb-6 flex items-center gap-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>Voltar</button>
+                 
                  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                     <div class="lg:col-span-2 p-6 content-container">
-                         <h3 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-3">Consumo Mensal</h3>
-                         <div class="my-4">
-                             <label for="month-filter" class="block text-sm font-medium text-gray-700">Selecionar Mês:</label>
-                             <input type="month" id="month-filter" class="mt-1 block w-full p-2">
-                         </div>
-                         <div class="overflow-x-auto">
-                             <table class="min-w-full">
-                                 <thead><tr><th>Material</th><th>Unid.</th><th>Total Consumido</th></tr></thead>
-                                 <tbody id="monthly-summary-table-body"></tbody>
-                             </table>
-                         </div>
-                     </div>
-                     <div class="p-6 content-container bg-blue-50 border-blue-200 flex flex-col justify-center items-center">
-                         <h3 class="text-xl font-semibold text-blue-800 mb-4 text-center">Pico de Demanda</h3>
-                         <div id="top-month-output" class="text-center">
-                             <!-- Conteúdo gerado via JS -->
-                         </div>
-                     </div>
+                       <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+                           <div class="flex justify-between items-center mb-6 border-b pb-4">
+                               <h3 class="text-xl font-bold text-gray-800">Consumo Mensal</h3>
+                               <input type="month" id="month-filter" class="input-field w-auto py-1 px-3">
+                           </div>
+                           <div class="modern-table-container">
+                               <div class="overflow-x-auto">
+                                   <table class="min-w-full">
+                                        <thead><tr><th>Material</th><th>Unid.</th><th>Total</th></tr></thead>
+                                        <tbody id="monthly-summary-table-body"></tbody>
+                                   </table>
+                               </div>
+                           </div>
+                       </div>
+                       <div class="bg-gradient-to-b from-white to-brand-50 rounded-xl shadow-sm border border-brand-100 p-8 h-fit sticky top-24">
+                           <h3 class="text-lg font-bold text-brand-800 mb-6 text-center tracking-wide">Destaques do Mês</h3>
+                           <div id="top-month-output" class="text-center"></div>
+                       </div>
                  </div>
             </div>
         </div>
